@@ -19,7 +19,7 @@ class Typer:
         if any(ord(c) > 127 for c in text):
             # Contains Unicode, use xdotool for reliable input
             subprocess.run(
-                ["xdotool", "type", "--clearmodifiers", text],
+                ["xdotool", "type", "--delay", "0", "--clearmodifiers", text],
                 check=True,
             )
         else:
