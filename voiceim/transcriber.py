@@ -1,29 +1,43 @@
 """FireRedASR API client."""
 
 import httpx
-import os
-from dotenv import load_dotenv
 
-load_dotenv()
+from .config import create_default_config
 
 
 class Transcriber:
     """Client for FireRedASR transcription API."""
 
-    API_URL = "http://localhost:8000/v1/transcribe"
+    def __init__(
+        self,
+        api_key: str | None = None,
+        api_base_url: str = "http://localhost:8000",
+        timeout: float = 30.0,
+    ):
+        """Initialize the transcriber.
 
-    def __init__(self):
-        self.api_key = os.getenv("FIREREDASR_API_KEY")
-        if not self.api_key:
-            raise ValueError("FIREREDASR_API_KEY not found in environment")
-        self.client = httpx.Client(timeout=30.0)
+        Args:
+            api_key: API key for authentication.
+            api_base_url: Base URL for the API.
+            timeout: HTTP request timeout in seconds.
+        """
+        create_default_config()
+
+        if not api_key:
+            raise ValueError(
+                "API key required. Set FIREREDASR_API_KEY environment variable "
+                "or configure api_key in ~/.config/voiceim/config.json"
+            )
+        self.api_key = api_key
+        self.api_url = f"{api_base_url.rstrip('/')}/v1/transcribe"
+        self.client = httpx.Client(timeout=timeout)
 
     def transcribe(self, audio_path: str) -> str:
         """Send audio file to API and return transcribed text."""
         with open(audio_path, "rb") as f:
             files = {"audio": ("audio.wav", f, "audio/wav")}
             headers = {"X-API-Key": self.api_key}
-            response = self.client.post(self.API_URL, files=files, headers=headers)
+            response = self.client.post(self.api_url, files=files, headers=headers)
             response.raise_for_status()
             return response.json()["text"]
 

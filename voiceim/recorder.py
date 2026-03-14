@@ -11,9 +11,14 @@ class AudioRecorder:
 
     SAMPLE_RATE = 16000  # FireRedASR expects 16kHz
     CHANNELS = 1
-    MIN_DURATION = 0.3  # Minimum recording duration in seconds
 
-    def __init__(self):
+    def __init__(self, min_duration: float = 0.3):
+        """Initialize the recorder.
+
+        Args:
+            min_duration: Minimum recording duration in seconds.
+        """
+        self.min_duration = min_duration
         self.stream = None
         self.frames = []
 
@@ -45,7 +50,7 @@ class AudioRecorder:
         audio = np.concatenate(self.frames, axis=0)
         duration = len(audio) / self.SAMPLE_RATE
 
-        if duration < self.MIN_DURATION:
+        if duration < self.min_duration:
             print(f"Recording too short ({duration:.2f}s), skipping")
             return None
 
