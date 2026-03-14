@@ -1,0 +1,18 @@
+[project]
+name = "voiceim"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "pynput",
+    "sounddevice",
+    "soundfile",
+    "httpx",
+    "python-dotenv",
+]
+
+[project.scripts]
+voiceim = "voiceim.main:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
