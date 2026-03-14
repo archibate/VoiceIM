@@ -6,16 +6,12 @@ dependencies = [
     "pynput",
     "sounddevice",
     "soundfile",
-    "httpx[socks]",
+    "httpx",
     "python-dotenv",
 ]
 
 [project.scripts]
 voiceim = "voiceim.main:main"
-
-[[tool.uv.index]]
-url = "https://pypi.tuna.tsinghua.edu.cn/simple"
-default = true
 
 [build-system]
 requires = ["hatchling"]
