@@ -1,10 +1,12 @@
 """Main application - push-to-talk voice input method."""
 
+import argparse
 import signal
 import sys
+from pathlib import Path
 from pynput import keyboard
 
-from .config import create_default_config, get_config
+from .config import create_default_config, get_config, set_config_file
 from .recorder import AudioRecorder
 from .transcriber import Transcriber
 from .typer import Typer
@@ -101,8 +103,30 @@ class VoiceIM:
         self.listener.join()
 
 
+def parse_args() -> argparse.Namespace:
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(
+        prog="voiceim",
+        description="Push-to-talk voice input method for X11/i3wm.",
+    )
+    parser.add_argument(
+        "-f",
+        "--config",
+        type=Path,
+        default=None,
+        metavar="FILE",
+        help="path to configuration file (default: ~/.config/voiceim/config.json)",
+    )
+    return parser.parse_args()
+
+
 def main():
     """Entry point."""
+    args = parse_args()
+
+    if args.config:
+        set_config_file(args.config)
+
     create_default_config()
     config = get_config()
 

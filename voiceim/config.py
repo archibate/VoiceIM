@@ -17,27 +17,31 @@ DEFAULTS = {
     "min_duration": 0.3,
 }
 
-CONFIG_DIR = Path.home() / ".config" / "voiceim"
-CONFIG_FILE = CONFIG_DIR / "config.json"
+DEFAULT_CONFIG_DIR = Path.home() / ".config" / "voiceim"
+DEFAULT_CONFIG_FILE = DEFAULT_CONFIG_DIR / "config.json"
+
+# Module-level config path (can be overridden via CLI)
+_config_file: Path = DEFAULT_CONFIG_FILE
 
 
-def get_config_dir() -> Path:
-    """Get the configuration directory path."""
-    return CONFIG_DIR
+def set_config_file(path: Path | str) -> None:
+    """Set the configuration file path."""
+    global _config_file
+    _config_file = Path(path).expanduser().resolve()
 
 
 def get_config_file() -> Path:
-    """Get the configuration file path."""
-    return CONFIG_FILE
+    """Get the current configuration file path."""
+    return _config_file
 
 
 def load_config() -> dict:
-    """Load configuration from file, creating default if not exists."""
-    if not CONFIG_FILE.exists():
+    """Load configuration from file, returning defaults if not exists."""
+    if not _config_file.exists():
         return DEFAULTS.copy()
 
     try:
-        with open(CONFIG_FILE, "r") as f:
+        with open(_config_file, "r") as f:
             config = json.load(f)
     except (json.JSONDecodeError, OSError) as e:
         print(f"Warning: Failed to load config file: {e}")
@@ -51,13 +55,13 @@ def load_config() -> dict:
 
 def create_default_config() -> None:
     """Create default configuration file if it doesn't exist."""
-    if CONFIG_FILE.exists():
+    if _config_file.exists():
         return
 
-    CONFIG_DIR.mkdir(parents=True, exist_ok=True)
-    with open(CONFIG_FILE, "w") as f:
+    _config_file.parent.mkdir(parents=True, exist_ok=True)
+    with open(_config_file, "w") as f:
         json.dump(DEFAULTS, f, indent=2)
-    print(f"Created default config at {CONFIG_FILE}")
+    print(f"Created default config at {_config_file}")
 
 
 def get_api_key(config: dict) -> Optional[str]:

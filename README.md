@@ -6,22 +6,15 @@ Hold Right Ctrl to record your voice, release to transcribe and type the text at
 
 ## Requirements
 
-- Python 3.11+
+- [uv](https://docs.astral.sh/uv/) (Python package manager)
 - X11 (Linux)
 - [FireRedASR](https://github.com/archibate/FireRedASR) server running locally
 
 ## Installation
 
 ```bash
-pip install voiceim
-```
-
-Or from source:
-
-```bash
 git clone https://github.com/archibate/VoiceIM.git
 cd VoiceIM
-pip install -e .
 ```
 
 ## Usage
@@ -42,10 +35,44 @@ pip install -e .
 3. Run VoiceIM:
 
    ```bash
-   voiceim
+   uv run voiceim
    ```
 
 4. Hold **Right Ctrl** to record, release to transcribe and type
+
+## Configuration
+
+VoiceIM uses a config file at `~/.config/voiceim/config.json`. It's created automatically with defaults on first run.
+
+### Config Options
+
+```json
+{
+  "api_key": null,
+  "api_base_url": "http://localhost:8000",
+  "hot_key": "ctrl_r",
+  "min_duration": 0.3
+}
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `api_key` | string \| null | null | API key. If null, uses `FIREREDASR_API_KEY` env var |
+| `api_base_url` | string | `http://localhost:8000` | Base URL for the transcription API |
+| `hot_key` | string | `ctrl_r` | Key to hold for recording |
+| `min_duration` | float | `0.3` | Minimum recording duration in seconds |
+
+### Custom Config Path
+
+Use `-f` to specify a different config file:
+
+```bash
+uv run voiceim -f /path/to/config.json
+```
+
+### Hot Keys
+
+Valid hot key names: `ctrl_r`, `ctrl_l`, `shift`, `shift_r`, `alt`, `alt_r`, `cmd`, `f1`-`f20`, `space`, `tab`, etc.
 
 ## How it works
 
