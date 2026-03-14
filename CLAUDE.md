@@ -11,46 +11,27 @@ VoiceIM is a push-to-talk voice input method for X11/i3wm. It records audio when
 This project uses [uv](https://docs.astral.sh/uv/) for Python package management. Use `uv run` to execute commands:
 
 ```bash
-uv run voiceim
-uv run python -m voiceim.main
-uv run pytest
-```
-
-See the `uv` skill for more details on uv usage patterns.
-
-## Commands
-
-```bash
-# Run the application
-voiceim
-
-# Or directly
-python -m voiceim.main
-
-# Install in development mode
-pip install -e .
+uv run voiceim                    # Run the application
+uv run voiceim -f config.json     # Run with custom config
 ```
 
 ## Architecture
 
-The application follows a simple pipeline architecture orchestrated by `VoiceIM` class in `main.py`:
+The application follows a simple pipeline architecture orchestrated by `VoiceIM` class:
 
 ```
-[Right Ctrl held] → AudioRecorder → Transcriber → Typer → [text typed at cursor]
+[Hot key held] → AudioRecorder → Transcriber → Typer → [text typed at cursor]
 ```
-
-### Components
 
 - **`main.py`** - `VoiceIM` class orchestrates the pipeline using pynput keyboard listener
 - **`recorder.py`** - `AudioRecorder` captures 16kHz mono audio via sounddevice (FireRedASR requires 16kHz)
-- **`transcriber.py`** - `Transcriber` sends WAV files to FireRedASR API at `http://localhost:8000/v1/transcribe`
-- **`typer.py`** - `Typer` simulates keyboard typing via pynput
+- **`transcriber.py`** - `Transcriber` sends WAV files to FireRedASR API at `{api_base_url}/v1/transcribe`
+- **`typer.py`** - `Typer` types text using pynput (ASCII) or xdotool (Unicode)
+- **`config.py`** - Configuration loading with file/env var precedence
 
 ## Configuration
 
 Configuration is loaded from `~/.config/voiceim/config.json` by default. Use `-f FILE` to specify a custom config path.
-
-### Config File Schema
 
 ```json
 {
@@ -63,21 +44,13 @@ Configuration is loaded from `~/.config/voiceim/config.json` by default. Use `-f
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `api_key` | string \| null | null | API key for FireRedASR. If null, uses `FIREREDASR_API_KEY` env var |
+| `api_key` | string \| null | null | API key. If null, uses `FIREREDASR_API_KEY` env var |
 | `api_base_url` | string | `http://localhost:8000` | Base URL for the transcription API |
-| `hot_key` | string | `ctrl_r` | Key to hold for recording (pynput Key name) |
+| `hot_key` | string | `ctrl_r` | Key to hold for recording (pynput Key enum name) |
 | `min_duration` | float | `0.3` | Minimum recording duration in seconds |
-
-### Hot Key Names
-
-Valid hot key names correspond to pynput's `keyboard.Key` enum: `ctrl_r`, `ctrl_l`, `shift`, `shift_r`, `alt`, `alt_r`, `cmd`, `f1`-`f20`, etc.
-
-### Environment Variables
-
-- `FIREREDASR_API_KEY` - API key (takes precedence over config file `api_key`)
 
 ## Platform Notes
 
-- Uses pynput for keyboard handling (requires X11)
-- Designed for i3wm environment
+- Requires X11 (uses pynput for keyboard events)
+- Requires xdotool for Unicode text input
 - Audio captured via sounddevice (requires PulseAudio or ALSA)
