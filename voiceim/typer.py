@@ -2,8 +2,7 @@
 
 import subprocess
 
-import pyperclip
-from pynput.keyboard import Controller, Key
+from pynput.keyboard import Controller
 
 
 class Typer:
@@ -20,9 +19,15 @@ class Typer:
 
         if len(text) > self.clipboard_threshold:
             # Use clipboard for longer text (instant paste)
-            pyperclip.copy(text)
+            # Copy to both PRIMARY (Shift+Insert in some terminals) and CLIPBOARD (Ctrl+V)
+            for selection in ["primary", "clipboard"]:
+                subprocess.run(
+                    ["xclip", "-selection", selection],
+                    input=text.encode(),
+                    check=True,
+                )
             subprocess.run(
-                ["xdotool", "key", "--clearmodifiers", "ctrl+v"],
+                ["xdotool", "key", "--clearmodifiers", "shift+Insert"],
                 check=True,
             )
         elif any(ord(c) > 127 for c in text):

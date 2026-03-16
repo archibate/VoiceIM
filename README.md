@@ -9,6 +9,7 @@ Hold Right Ctrl to record your voice, release to transcribe and type the text at
 - [uv](https://docs.astral.sh/uv/) (Python package manager)
 - X11 (Linux)
 - [xdotool](https://www.semicomplete.com/projects/xdotool/) (for Unicode text input)
+- [xclip](https://github.com/astrand/xclip) (for clipboard paste)
 - [FireRedASR](https://github.com/archibate/FireRedASR) server running locally
 
 ## Installation
