@@ -84,6 +84,17 @@ uv run voiceim -f /path/to/config.json
 
 Valid hot key names: `ctrl_r`, `ctrl_l`, `shift`, `shift_r`, `alt`, `alt_r`, `cmd`, `f1`-`f20`, `space`, `tab`, etc.
 
+### Sound Feedback
+
+VoiceIM plays sound feedback for recording events:
+
+| Event | Default Sound | When |
+|-------|---------------|------|
+| Record complete | 800 Hz beep (0.1s) | After recording finishes, before transcription |
+| Transcription error | 400 Hz beep (0.2s) | When API request fails |
+
+To use custom sounds, set `record_complete_sound` or `transcribe_error_sound` to a WAV file path. Set `sound_enabled: false` to disable all sounds.
+
 ## How it works
 
 ```
