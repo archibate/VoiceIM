@@ -8,6 +8,7 @@ Hold Right Ctrl to record your voice, release to transcribe and type the text at
 
 - [uv](https://docs.astral.sh/uv/) (Python package manager)
 - X11 (Linux)
+- [xdotool](https://www.semicomplete.com/projects/xdotool/) (for Unicode text input)
 - [FireRedASR](https://github.com/archibate/FireRedASR) server running locally
 
 ## Installation
@@ -19,7 +20,7 @@ cd VoiceIM
 
 ## Usage
 
-1. Start the FireRedASR server (see [FireRedASR](https://github.com/archibate/FireRedASR))
+1. Start the FireRedASR server (see [FireRedASR `api/README.md`](https://github.com/archibate/FireRedASR/blob/main/api/README.md) for setup guide)
 
 2. Set your API key:
 
