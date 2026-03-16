@@ -42,6 +42,7 @@ class VoiceIM:
         api_key: str | None = None,
         api_base_url: str = "http://localhost:8000",
         min_duration: float = 0.3,
+        clipboard_threshold: int = 20,
     ):
         """Initialize VoiceIM.
 
@@ -50,11 +51,12 @@ class VoiceIM:
             api_key: API key for transcription service.
             api_base_url: Base URL for the API.
             min_duration: Minimum recording duration in seconds.
+            clipboard_threshold: Text length threshold for clipboard paste.
         """
         self.hot_key = hot_key
         self.recorder = AudioRecorder(min_duration=min_duration)
         self.transcriber = Transcriber(api_key=api_key, api_base_url=api_base_url)
-        self.typer = Typer()
+        self.typer = Typer(clipboard_threshold=clipboard_threshold)
         self.is_recording = False
         self.listener = None
 
@@ -141,6 +143,7 @@ def main():
         api_key=config["api_key"],
         api_base_url=config["api_base_url"],
         min_duration=config["min_duration"],
+        clipboard_threshold=config["clipboard_threshold"],
     )
     app.run()
 

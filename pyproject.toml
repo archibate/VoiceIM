@@ -8,6 +8,7 @@ dependencies = [
     "soundfile",
     "httpx[socks]",
     "python-dotenv",
+    "pyperclip",
 ]
 
 [project.scripts]

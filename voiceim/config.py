@@ -15,6 +15,7 @@ DEFAULTS = {
     "api_base_url": "http://localhost:8000",
     "hot_key": "ctrl_r",
     "min_duration": 0.3,
+    "clipboard_threshold": 20,
 }
 
 DEFAULT_CONFIG_DIR = Path.home() / ".config" / "voiceim"
