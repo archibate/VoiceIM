@@ -6,6 +6,7 @@ dependencies = [
     "pynput",
     "sounddevice",
     "soundfile",
+    "numpy",
     "httpx[socks]",
     "python-dotenv",
 ]

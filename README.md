@@ -54,7 +54,10 @@ VoiceIM uses a config file at `~/.config/voiceim/config.json`. It's created auto
   "api_base_url": "http://localhost:8000",
   "hot_key": "ctrl_r",
   "min_duration": 0.3,
-  "clipboard_threshold": 20
+  "clipboard_threshold": 20,
+  "sound_enabled": true,
+  "record_complete_sound": null,
+  "transcribe_error_sound": null
 }
 ```
 
@@ -65,6 +68,9 @@ VoiceIM uses a config file at `~/.config/voiceim/config.json`. It's created auto
 | `hot_key` | string | `ctrl_r` | Key to hold for recording |
 | `min_duration` | float | `0.3` | Minimum recording duration in seconds |
 | `clipboard_threshold` | int | `20` | Text length threshold for clipboard paste (shorter uses keyboard simulation) |
+| `sound_enabled` | bool | `true` | Enable/disable sound feedback |
+| `record_complete_sound` | string \| null | null | Path to custom WAV for record complete (null = default beep) |
+| `transcribe_error_sound` | string \| null | null | Path to custom WAV for error (null = default warning) |
 
 ### Custom Config Path
 

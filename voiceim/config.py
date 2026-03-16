@@ -16,6 +16,9 @@ DEFAULTS = {
     "hot_key": "ctrl_r",
     "min_duration": 0.3,
     "clipboard_threshold": 20,
+    "sound_enabled": True,
+    "record_complete_sound": None,  # None = use default beep, or path to .wav file
+    "transcribe_error_sound": None,  # None = use default warning, or path to .wav file
 }
 
 DEFAULT_CONFIG_DIR = Path.home() / ".config" / "voiceim"

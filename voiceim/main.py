@@ -8,6 +8,7 @@ from pynput import keyboard
 
 from .config import create_default_config, get_config, set_config_file
 from .recorder import AudioRecorder
+from .sound import SoundPlayer
 from .transcriber import Transcriber
 from .typer import Typer
 
@@ -43,6 +44,9 @@ class VoiceIM:
         api_base_url: str = "http://localhost:8000",
         min_duration: float = 0.3,
         clipboard_threshold: int = 20,
+        sound_enabled: bool = True,
+        record_complete_sound: str | None = None,
+        transcribe_error_sound: str | None = None,
     ):
         """Initialize VoiceIM.
 
@@ -52,11 +56,19 @@ class VoiceIM:
             api_base_url: Base URL for the API.
             min_duration: Minimum recording duration in seconds.
             clipboard_threshold: Text length threshold for clipboard paste.
+            sound_enabled: Whether sound feedback is enabled.
+            record_complete_sound: Path to custom WAV for record complete.
+            transcribe_error_sound: Path to custom WAV for error.
         """
         self.hot_key = hot_key
         self.recorder = AudioRecorder(min_duration=min_duration)
         self.transcriber = Transcriber(api_key=api_key, api_base_url=api_base_url)
         self.typer = Typer(clipboard_threshold=clipboard_threshold)
+        self.sound_player = SoundPlayer(
+            enabled=sound_enabled,
+            record_complete_sound=record_complete_sound,
+            transcribe_error_sound=transcribe_error_sound,
+        )
         self.is_recording = False
         self.listener = None
 
@@ -76,12 +88,14 @@ class VoiceIM:
             if audio_path is None:
                 return
 
+            self.sound_player.play_record_complete()
             print("Transcribing...")
             try:
                 text = self.transcriber.transcribe(audio_path)
                 print(f"Result: {text}")
                 self.typer.type_text(text)
             except Exception as e:
+                self.sound_player.play_error()
                 print(f"Error: {e}")
 
     def run(self):
@@ -144,6 +158,9 @@ def main():
         api_base_url=config["api_base_url"],
         min_duration=config["min_duration"],
         clipboard_threshold=config["clipboard_threshold"],
+        sound_enabled=config["sound_enabled"],
+        record_complete_sound=config["record_complete_sound"],
+        transcribe_error_sound=config["transcribe_error_sound"],
     )
     app.run()
 

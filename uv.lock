@@ -432,6 +432,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "httpx", extra = ["socks"] },
+    { name = "numpy" },
     { name = "pynput" },
     { name = "python-dotenv" },
     { name = "sounddevice" },
@@ -441,6 +442,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "httpx", extras = ["socks"] },
+    { name = "numpy" },
     { name = "pynput" },
     { name = "python-dotenv" },
     { name = "sounddevice" },
