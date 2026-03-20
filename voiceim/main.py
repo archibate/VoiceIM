@@ -97,6 +97,8 @@ class VoiceIM:
             except Exception as e:
                 self.sound_player.play_error()
                 print(f"Error: {e}")
+            finally:
+                Path(audio_path).unlink(missing_ok=True)
 
     def run(self):
         """Start the voice input method."""

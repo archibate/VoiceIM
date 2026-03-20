@@ -1,9 +1,11 @@
 """Audio recording with sounddevice."""
 
+import os
+import tempfile
+
+import numpy as np
 import sounddevice as sd
 import soundfile as sf
-import tempfile
-import numpy as np
 
 
 class AudioRecorder:
@@ -54,6 +56,7 @@ class AudioRecorder:
             print(f"Recording too short ({duration:.2f}s), skipping")
             return None
 
-        temp_path = tempfile.mktemp(suffix=".wav")
+        fd, temp_path = tempfile.mkstemp(suffix=".wav")
+        os.close(fd)
         sf.write(temp_path, audio, self.SAMPLE_RATE)
         return temp_path
