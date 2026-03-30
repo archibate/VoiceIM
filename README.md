@@ -10,8 +10,6 @@ Hold Right Ctrl to record your voice, release to transcribe and type the text at
 - X11 (Linux)
 - [xdotool](https://www.semicomplete.com/projects/xdotool/) (for Unicode text input)
 - [xclip](https://github.com/astrand/xclip) (for clipboard paste)
-- [FireRedASR](https://github.com/archibate/FireRedASR) server running locally
-
 ## Installation
 
 ```bash
@@ -21,26 +19,13 @@ cd VoiceIM
 
 ## Usage
 
-1. Start the FireRedASR server (see [FireRedASR `api/README.md`](https://github.com/archibate/FireRedASR/blob/main/api/README.md) for setup guide)
-
-2. Set your API key:
-
-   ```bash
-   export FIREREDASR_API_KEY=your-api-key
-   ```
-
-   Or create a `.env` file in the project directory:
-   ```
-   FIREREDASR_API_KEY=your-api-key
-   ```
-
-3. Run VoiceIM:
+1. Run VoiceIM:
 
    ```bash
    uv run voiceim
    ```
 
-4. Hold **Right Ctrl** to record, release to transcribe and type
+2. Hold **Right Ctrl** to record, release to transcribe and type
 
 ## Configuration
 
@@ -50,27 +35,29 @@ VoiceIM uses a config file at `~/.config/voiceim/config.json`. It's created auto
 
 ```json
 {
-  "api_key": null,
-  "api_base_url": "http://localhost:8000",
+  "api_base_url": "https://qwen-qwen3-asr-demo.ms.show",
   "hot_key": "ctrl_r",
   "min_duration": 0.3,
   "clipboard_threshold": 0,
   "sound_enabled": true,
   "record_complete_sound": null,
-  "transcribe_error_sound": null
+  "transcribe_error_sound": null,
+  "lang": "auto",
+  "itn": false
 }
 ```
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `api_key` | string \| null | null | API key. If null, uses `FIREREDASR_API_KEY` env var |
-| `api_base_url` | string | `http://localhost:8000` | Base URL for the transcription API |
+| `api_base_url` | string | `https://qwen-qwen3-asr-demo.ms.show` | Base URL for the Qwen ASR Gradio server |
 | `hot_key` | string | `ctrl_r` | Key to hold for recording |
 | `min_duration` | float | `0.3` | Minimum recording duration in seconds |
 | `clipboard_threshold` | int | `0` | Text length threshold for clipboard paste (shorter uses keyboard simulation) |
 | `sound_enabled` | bool | `true` | Enable/disable sound feedback |
 | `record_complete_sound` | string \| null | null | Path to custom WAV for record complete (null = default beep) |
 | `transcribe_error_sound` | string \| null | null | Path to custom WAV for error (null = default warning) |
+| `lang` | string | `auto` | Language for transcription (auto/zh/en/ja/ko/es/fr/de/ar/it/ru/pt) |
+| `itn` | bool | `false` | Enable inverse text normalization |
 
 ### Custom Config Path
 
@@ -98,7 +85,7 @@ To use custom sounds, set `record_complete_sound` or `transcribe_error_sound` to
 ## How it works
 
 ```
-[Hold Right Ctrl] → Record audio → Send to FireRedASR API → Type transcribed text
+[Hold Right Ctrl] → Record audio → Send to Qwen ASR (Gradio) → Type transcribed text
 ```
 
 ## License

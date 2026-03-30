@@ -7,7 +7,8 @@ dependencies = [
     "sounddevice",
     "soundfile",
     "numpy",
-    "httpx[socks]",
+    "aiohttp",
+    "gradio_client",
     "python-dotenv",
 ]
 

@@ -1,47 +1,77 @@
-"""FireRedASR API client."""
+"""Qwen ASR transcription client via Gradio."""
 
-import httpx
+import asyncio
+import sys
+from contextlib import contextmanager, redirect_stdout
+
+import aiohttp
+from gradio_client import Client, handle_file
 
 from .config import create_default_config
 
+BASE_URL = "https://qwen-qwen3-asr-demo.ms.show"
+USER_AGENT = "Mozilla/5.0 AppleWebKit/537.36 Chrome/143 Safari/537"
+
+
+@contextmanager
+def _suppress_gradio_stdout():
+    with redirect_stdout(sys.stderr):
+        yield
+
 
 class Transcriber:
-    """Client for FireRedASR transcription API."""
+    """Client for Qwen ASR transcription via Gradio."""
 
     def __init__(
         self,
-        api_key: str | None = None,
-        api_base_url: str = "http://localhost:8000",
-        timeout: float = 30.0,
+        api_base_url: str = BASE_URL,
+        lang: str = "auto",
+        itn: bool = False,
+        timeout: float = 60.0,
     ):
         """Initialize the transcriber.
 
         Args:
-            api_key: API key for authentication.
-            api_base_url: Base URL for the API.
+            api_base_url: Base URL for the Gradio ASR server.
+            lang: Language code (auto/zh/en/ja/ko/es/fr/de/ar/it/ru/pt).
+            itn: Enable inverse text normalization.
             timeout: HTTP request timeout in seconds.
         """
         create_default_config()
-
-        if not api_key:
-            raise ValueError(
-                "API key required. Set FIREREDASR_API_KEY environment variable "
-                "or configure api_key in ~/.config/voiceim/config.json"
-            )
-        self.api_key = api_key
-        self.api_url = f"{api_base_url.rstrip('/')}/v1/transcribe"
-        self.client = httpx.Client(timeout=timeout)
+        self.base_url = api_base_url.rstrip("/")
+        self.lang = lang
+        self.itn = itn
+        self.timeout = timeout
 
     def transcribe(self, audio_path: str) -> str:
-        """Send audio file to API and return transcribed text."""
-        with open(audio_path, "rb") as f:
-            files = {"audio": ("audio.wav", f, "audio/wav")}
-            headers = {"X-API-Key": self.api_key}
-            response = self.client.post(self.api_url, files=files, headers=headers)
-            response.raise_for_status()
-            return response.json()["text"]
+        """Send audio file to Qwen ASR and return transcribed text."""
+        return asyncio.run(self._transcribe_async(audio_path))
 
-    def __del__(self):
-        """Clean up HTTP client."""
-        if hasattr(self, "client"):
-            self.client.close()
+    async def _transcribe_async(self, audio_path: str) -> str:
+        async with aiohttp.ClientSession(
+            base_url=self.base_url,
+            headers={aiohttp.hdrs.USER_AGENT: USER_AGENT},
+            timeout=aiohttp.ClientTimeout(total=self.timeout),
+        ) as session:
+            # Upload audio file
+            with open(audio_path, "rb") as f:
+                form = aiohttp.FormData()
+                form.add_field("files", f, filename="audio.wav")
+                res = await session.post("/gradio_api/upload", data=form)
+                res.raise_for_status()
+                server_path = (await res.json())[0]
+
+            audio_url = f"{self.base_url}/gradio_api/file={server_path}"
+
+            # Call Gradio predict (sync)
+            with _suppress_gradio_stdout():
+                client = Client(self.base_url)
+                result = client.predict(
+                    audio_file=handle_file(audio_url),
+                    context="",
+                    language=self.lang,
+                    enable_itn=self.itn,
+                    api_name="/asr_inference",
+                )
+                client.close()
+                return result[0]

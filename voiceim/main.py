@@ -40,8 +40,9 @@ class VoiceIM:
     def __init__(
         self,
         hot_key: keyboard.Key = keyboard.Key.ctrl_r,
-        api_key: str | None = None,
-        api_base_url: str = "http://localhost:8000",
+        api_base_url: str = "https://qwen-qwen3-asr-demo.ms.show",
+        lang: str = "auto",
+        itn: bool = False,
         min_duration: float = 0.3,
         clipboard_threshold: int = 20,
         sound_enabled: bool = True,
@@ -52,8 +53,9 @@ class VoiceIM:
 
         Args:
             hot_key: Key to hold for recording.
-            api_key: API key for transcription service.
-            api_base_url: Base URL for the API.
+            api_base_url: Base URL for the ASR API.
+            lang: Language code for transcription.
+            itn: Enable inverse text normalization.
             min_duration: Minimum recording duration in seconds.
             clipboard_threshold: Text length threshold for clipboard paste.
             sound_enabled: Whether sound feedback is enabled.
@@ -62,7 +64,9 @@ class VoiceIM:
         """
         self.hot_key = hot_key
         self.recorder = AudioRecorder(min_duration=min_duration)
-        self.transcriber = Transcriber(api_key=api_key, api_base_url=api_base_url)
+        self.transcriber = Transcriber(
+            api_base_url=api_base_url, lang=lang, itn=itn
+        )
         self.typer = Typer(clipboard_threshold=clipboard_threshold)
         self.sound_player = SoundPlayer(
             enabled=sound_enabled,
@@ -156,8 +160,9 @@ def main():
 
     app = VoiceIM(
         hot_key=hot_key,
-        api_key=config["api_key"],
         api_base_url=config["api_base_url"],
+        lang=config["lang"],
+        itn=config["itn"],
         min_duration=config["min_duration"],
         clipboard_threshold=config["clipboard_threshold"],
         sound_enabled=config["sound_enabled"],

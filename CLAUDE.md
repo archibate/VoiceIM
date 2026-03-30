@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-VoiceIM is a push-to-talk voice input method for X11/i3wm. It records audio when the Right Ctrl key is held, transcribes it via a FireRedASR API server, and types the result at the current cursor position.
+VoiceIM is a push-to-talk voice input method for X11/i3wm. It records audio when the Right Ctrl key is held, transcribes it via a Qwen ASR Gradio server, and types the result at the current cursor position.
 
 ## Development
 
@@ -24,8 +24,8 @@ The application follows a simple pipeline architecture orchestrated by `VoiceIM`
 ```
 
 - **`main.py`** - `VoiceIM` class orchestrates the pipeline using pynput keyboard listener
-- **`recorder.py`** - `AudioRecorder` captures 16kHz mono audio via sounddevice (FireRedASR requires 16kHz)
-- **`transcriber.py`** - `Transcriber` sends WAV files to FireRedASR API at `{api_base_url}/v1/transcribe`
+- **`recorder.py`** - `AudioRecorder` captures 16kHz mono audio via sounddevice
+- **`transcriber.py`** - `Transcriber` uploads WAV to Qwen ASR Gradio server and calls `/asr_inference`
 - **`typer.py`** - `Typer` types text using clipboard (long text), xdotool (Unicode), or pynput (short ASCII)
 - **`config.py`** - Configuration loading with file/env var precedence
 
@@ -35,21 +35,23 @@ Configuration is loaded from `~/.config/voiceim/config.json` by default. Use `-f
 
 ```json
 {
-  "api_key": null,
-  "api_base_url": "http://localhost:8000",
+  "api_base_url": "https://qwen-qwen3-asr-demo.ms.show",
   "hot_key": "ctrl_r",
   "min_duration": 0.3,
-  "clipboard_threshold": 0
+  "clipboard_threshold": 0,
+  "lang": "auto",
+  "itn": false
 }
 ```
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `api_key` | string \| null | null | API key. If null, uses `FIREREDASR_API_KEY` env var |
-| `api_base_url` | string | `http://localhost:8000` | Base URL for the transcription API |
+| `api_base_url` | string | `https://qwen-qwen3-asr-demo.ms.show` | Base URL for the Qwen ASR Gradio server. Override with `QWEN_ASR_BASE_URL` env var |
 | `hot_key` | string | `ctrl_r` | Key to hold for recording (pynput Key enum name) |
 | `min_duration` | float | `0.3` | Minimum recording duration in seconds |
 | `clipboard_threshold` | int | `0` | Text length threshold for clipboard paste |
+| `lang` | string | `auto` | Language for transcription (auto/zh/en/ja/ko/es/fr/de/ar/it/ru/pt) |
+| `itn` | bool | `false` | Enable inverse text normalization |
 
 ## Platform Notes
 
